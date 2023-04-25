@@ -1,0 +1,126 @@
+{
+    "Terrain": {
+        "0": "Plaine",
+        "1": "Rivière",
+        "2": "Trou",
+        "3": "Pavé",
+        "4": "Pont",
+        "5": "Bush",
+        "6": "Rocher",
+        "7": "Coffre"
+    },
+    "Properties": {
+        "0": {},
+        "1": {
+            "Base": {
+                "DPC": -1,
+                "Agilité": -1
+            },
+            "PassBy": {
+                "Agilté": -1
+            }
+        },
+        "2": {
+            "Solid": true
+        },
+        "3": {
+            "Base": {
+                "Agilité": 3
+            }
+        },
+        "4": {
+            "Base": {
+                "Agilité": 2,
+                "Faiblesse": 1
+            },
+            "PassBy": {
+                "Agilité": -1
+            }
+        },
+        "5": {
+            "Hide": 2,
+            "Base": {
+                "Range": -1,
+                "DPC": 1,
+                "Agilité": -1
+            },
+            "PassBy": {
+                "Agilité": -1
+            }
+        },
+        "6": {
+            "Solid": true
+        },
+        "7": {
+            "Solid": true
+        }
+    },
+    "Texture": {
+        "rootpath": "tiles/",
+        "0": {
+            "variations": [
+                "plaine-0.png",
+                "plaine-1.png",
+                "plaine-2.png"
+            ],
+            "connexe": {}
+        },
+        "1": {
+            "variations": [
+                "water-0.png"
+            ],
+            "connexe": {}
+        },
+        "2": {
+            "variations": [
+                "trou-0.png"
+            ],
+            "connexe": {
+                "0": "trou-0.png",
+                "1": null,
+                "2": "trou-1.png",
+                "3": "trou-2.png"
+            }
+        },
+        "3": {
+            "variations": [
+                "pave-0.png"
+            ],
+            "connexe": {}
+        },
+        "4": {
+            "variations": [
+                "pont-0.png"
+            ],
+            "connexe": {}
+        },
+        "5": {
+            "variations": [
+                "bush-0.png"
+            ],
+            "connexe": {}
+        },
+        "6": {
+            "variations": [
+                "rock-0.png"
+            ],
+            "connexe": {}
+        },
+        "7": {
+            "variations": [
+                "chest-0.png"
+            ],
+            "connexe": {}
+        }
+    },
+    "LootTable": {
+        "a": {}
+    },
+    "ZoneDeSort": {
+        "ZoneHeal": 20,
+        "ZoneDegat": 21,
+        "ZoneSpeed+": 22,
+        "ZoneSpeed-": 23,
+        "ZoneSpawn": 30
+    }
+}

@@ -1,0 +1,74 @@
+{
+    "Pieces": {
+        "P":{
+            "FullName": "Pawn Minion",
+            "HP": 3,
+            "DPC": 1,
+            "Agilité": 1, /*lente*/
+            "Portée": 1 /*Portée | 1 = CaC*/
+          },
+        
+        "Q":{
+            "FullName": "Dame Assassin",
+            "HP": 16,
+            "DPC": 7,
+            "Agilité": 8, /*très agile*/
+            "Portée": 10, /*snipper*/
+            "Piercing":true
+          },
+    
+        "K":{
+            "FullName": "Roi Mage",
+            "HP": 40,
+            "DPC": 2,
+            "Agilité": 1,
+            "Portée": 1
+          },
+        
+        "R":{
+            "FullName": "Tour De l'Enfer",
+            "HP": 30,
+            "DPC": 5,
+            "Agilité": 1,
+            "Portée": 1
+          },
+        
+        "B":{
+            "FullName": "Fou Soin",
+            "HP": 10,
+            "DPC": -3, /* DPC négatif = abs(DPC) Heal*/
+            "Agilité": 5, /**/
+            "Portée": -1 /**/
+          },
+    
+        "N":{
+            "FullName": "Cavalier ",
+            "HP": 20,
+            "DPC": 3,
+            "Agilité": 7, /**/
+            "Portée": 1 /**/
+          }
+    },
+    
+    
+    "Batiment":{
+        "Turret":{
+            "FullName":"Turret",
+            "HP": 80,
+            "DPC": 10,
+            "Agilité": -1,
+            "Porté": 5,
+            "Loot": XX
+        }
+    },
+
+    "Sortillèges":{
+        "Poison":{
+            "DPS": 2,
+            "Durée": -1
+        }
+    }
+    
+       
+}
+/*LootTable: a*/ 

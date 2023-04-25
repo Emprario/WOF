@@ -1,0 +1,101 @@
+{
+    "Pieces": {
+        "P": {
+            "FullName": "Pawn Minion",
+            "MAXHP": 5,
+            "HP": 3,
+            "DPC": 1,
+            "Agilité": 1,
+            "Range": 1
+        },
+        "Q": {
+            "FullName": "Dame Assassin",
+            "MAXHP": 16,
+            "HP": 16,
+            "DPC": 7,
+            "Agilité": 7,
+            "Range": 10,
+            "Piercing": true
+        },
+        "K": {
+            "FullName": "Roi Mage",
+            "MAXHP": 50,
+            "HP": 40,
+            "DPC": 2,
+            "Agilité": 1,
+            "Range": 1
+        },
+        "R": {
+            "FullName": "Tour De l'Enfer",
+            "MAXHP": 30,
+            "HP": 30,
+            "DPC": 5,
+            "Agilité": 1,
+            "Range": 1
+        },
+        "B": {
+            "FullName": "Fou Soin",
+            "MAXHP": 10,
+            "HP": 10,
+            "DPC": -3,
+            "Agilité": 5,
+            "Range": 4
+        },
+        "N": {
+            "FullName": "Cavalier NWAR",
+            "MAXHP": 20,
+            "HP": 20,
+            "DPC": 3,
+            "Agilité": 7,
+            "Range": 1,
+            "CanJump": true
+        }
+    },
+    "_comment": {
+        "Sparse": {
+            "ncoef": 1,
+            "P": 8,
+            "Q": 3,
+            "K": 1,
+            "R": 2,
+            "B": 2,
+            "N": 2,
+            "Chest": 0,
+            "Turret": 0
+        }
+    },
+    "Batiment": {
+        "Turret": {
+            "FullName": "Turret",
+            "MAXHP": 70,
+            "HP": 70,
+            "DPC": 10,
+            "Agilité": -1,
+            "Range": 5,
+            "LootTable": "a"
+        },
+        "Chest": {
+            "FullName": "Turret",
+            "MAXHP": 80,
+            "HP": 80,
+            "DPC": 0,
+            "Agilité": -1,
+            "Range": -1,
+            "LootTable": "a"
+        }
+    },
+    "Sortillèges": {
+        "Poison": {
+            "DPS": 2,
+            "Durée": -1
+        },
+        "Heal": {
+            "DPS": -2,
+            "Durée": -1
+        },
+        "Speed": {
+            "Agilité": 1.25,
+            "Durée": -1
+        }
+    }
+}
