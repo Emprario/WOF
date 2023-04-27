@@ -2,7 +2,7 @@ import pygame
 import json
 from entities import Entity, Piece, Chest, Filtre
 from map import MapObject
-from RESSOURCE import MAP_SEL, REEL_SIZE
+from RESSOURCE import MAP_SEL, REEL_SIZE, DEFAULT_ACTION_COUNT
 
 
 #class GraphicalGameControlEngine:
@@ -71,7 +71,7 @@ class Player:
         self.possibilite_mvto = []
         self.possibilite_attack = []
         self.sel_piece:Piece = None
-        self.action_count = 8
+        self.action_count = DEFAULT_ACTION_COUNT
         self.pieces_mved = [] 
 
 class MaitreDuJeu:
@@ -108,6 +108,8 @@ class MaitreDuJeu:
                 self.fengine.display_update(player, self.MO.get_texturemap())
                 self.actions(self.fengine.events(), player)
             self.collect_money(player)
+            player.action_count = DEFAULT_ACTION_COUNT
+            player.pieces_mved = []
         self.repercussions()
 
     def mainloop(self) -> None:
@@ -127,7 +129,6 @@ class MaitreDuJeu:
         pass
 
     def is_ended(self) -> bool:
-
         chest = {'w': False, 'b': False}
         # print(self.players)
         for player in self.players:
