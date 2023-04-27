@@ -12,6 +12,7 @@
     "Properties": {
         "0": {},
         "1": {
+            "Solid":true,
             "Base": {
                 "DPC": -1,
                 "Agilité": -1

@@ -215,7 +215,7 @@ class MaitreDuJeu:
         lstcases: list[list[tuple[int, int], int]] = [[case, 0]]
         # Créer les cases
         for case_d in lstcases:
-            if case_d[1] > range:
+            if case_d[1] > range or case_d[0] in self.MO.solid:
                 continue
             next = self.__adjacent_one(case_d[0])
             for case in next:
