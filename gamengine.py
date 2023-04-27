@@ -65,12 +65,14 @@ class Player:
 
     def __init__(self, color: str):
         self.gold = 100
-        self.played = False
         self.color = color
         self.pieces = []  # 1 grosse de chaque + 8 pions
         self.pointing = False
         self.possibilite_mvto = []
         self.possibilite_attack = []
+        self.sel_piece:Piece = None
+        self.action_count = 8
+        self.pieces_mved = [] 
 
 class MaitreDuJeu:
 
@@ -101,7 +103,7 @@ class MaitreDuJeu:
 
     def OneTour(self) -> None:
         for player in self.players:
-            while not player.played:
+            while player.action_count > 0:
                 self.update_registery()
                 self.fengine.display_update(player, self.MO.get_texturemap())
                 self.actions(self.fengine.events(), player)
@@ -138,35 +140,42 @@ class MaitreDuJeu:
         print("END!")
 
     def collect_money(self, player) -> None:
-        communs = [{z for x in self.players[0].pieces for z in self.MO.glod_zone if x.pos in z}, {
-            z for x in self.playersspwan[1].pieces for z in self.MO.glod_zone if x.pos in z}]
-        for zone in {z for z in self.MO.glod_zone} - communs[0].intersection(communs[1]):
-            for playerid in [playerid for playerid in self.players if player == self.players[playerid]]:
+        communs = [{tuple(z) for x in self.players[0].pieces for z in self.MO.gold_zone if x.pos in z}, {
+            tuple(z) for x in self.players[1].pieces for z in self.MO.gold_zone if x.pos in z}]
+        for zone in {tuple(z) for z in self.MO.gold_zone} - communs[0].intersection(communs[1]):
+            for playerid in [playerid for playerid in range(len(self.players)) if player == self.players[playerid]]:
                 if zone in communs[playerid]:
                     self.players[playerid].gold += 10
 
-    def actions(self, mouse, player):
+    def actions(self, mouse:tuple[int,int], player:Player):
         """Cliquer des pieces pour les bougers, 1 grosse, autant de petites voulus"""
         if mouse == None:
             return
         mouse = tuple(co // REEL_SIZE for co in mouse)
         #print(mouse)
         #print(tuple(co // REEL_SIZE for co in mouse))
-        sel_piece: list = [p for p in player.pieces if p.get_pos() == mouse]
+        sel_piece: list = [p for p in player.pieces if p.get_pos() == mouse and p not in player.pieces_mved]
         
         if len(sel_piece) > 0:
             player.possibilite_mvto = []
             self.disable_highlight_all()
             player.pointing = True
             player.possibilite_mvto = self.show_mvto(sel_piece[0])
+            player.sel_piece = sel_piece[0]
             self.show_attack(sel_piece[0],[pl for pl in self.players if pl is not player][0])
         elif player.pointing and mouse not in player.possibilite_mvto:
             player.pointing = False
             player.possibilite_mvto = []
+            player.sel_piece = None
             self.disable_highlight_all()
-        else:
+        elif player.pointing and mouse in player.possibilite_mvto:
             player.pointing = False
-            pass
+            player.possibilite_mvto = []
+            self.mvto(player.sel_piece,mouse)
+            self.disable_highlight_all()
+            player.pieces_mved.append(player.sel_piece)
+            player.sel_piece = None
+            player.action_count -= 1
 
     def attack(self, origin:Entity, cible:Entity):
         cible.properties["HP"] -= origin.properties["DPC"]
@@ -175,8 +184,10 @@ class MaitreDuJeu:
         if cible.properties["MAXHP"] < cible.properties["HP"]:
             cible.properties["HP"] = cible.properties["MAXHP"]
 
-    def mvto(self, cible:Entity):
-        pass
+    def mvto(self, cible:Entity, case:tuple[int,int]):
+        cible.pos = case
+        
+        
 
     def show_attack(self, cible:Entity, target:Player) -> list:
         adj = self.adjacent(cible.get_pos(), cible.properties["Range"])
