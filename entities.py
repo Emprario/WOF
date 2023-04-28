@@ -2,17 +2,44 @@ import pygame
 import json
 from RESSOURCE import REEL_SIZE
 
+class HPBar(pygame.sprite.Sprite):
+
+    def __init__(self,MAXHP:int):
+        super().__init__()
+        self.MAXHP = MAXHP
+        self.hp = MAXHP
+        self.size = REEL_SIZE
+        self.surface = pygame.Surface((self.size, REEL_SIZE/10))
+        self.surface.fill((200,0,0))
+
+    def update_prop(self):
+        self.size = self.hp * REEL_SIZE / self.MAXHP
+        self.surface = pygame.Surface((self.size, REEL_SIZE/10))
+        self.surface.fill((200,0,0))
 
 
 class Entity(pygame.sprite.Sprite):
 
-    def __init__(self, texture: str, pos: tuple[int, int]):
+    def __init__(self, texture: pygame.image, pos: tuple[int, int], type:str, subtype:str):
         super().__init__()
-        self.img = texture
-        pygame.sprite.Sprite.__init__(self)
+        if texture != None:
+            self.img = texture
+        else:
+            self.img = pygame.image.load("tiles/no-texture.png")
         self.surface = pygame.Surface((REEL_SIZE, REEL_SIZE))
         self.pos = pos  # By case
         self.UID = None
+
+        # Def properties
+        # Load the properties from config.json
+        with open("config-good.json") as config:
+            data = json.load(config)
+
+        self.properties = data[type][subtype]
+
+        # Prepare HPBAR
+        self.hpbar = HPBar(self.properties["HP"])
+
 
     def goto(self, x: int = None, y: int = None):
         if (x, y) == (None, None):
@@ -33,6 +60,8 @@ class Entity(pygame.sprite.Sprite):
 
     def blit(self, display):
         display.blit(self.img, [pos * REEL_SIZE for pos in self.pos])
+        if self.hpbar.hp < self.hpbar.MAXHP:
+            display.blit(self.hpbar.surface, [pos * REEL_SIZE for pos in self.pos])
 
 
 class Piece(Entity):
@@ -44,16 +73,10 @@ class Piece(Entity):
             raise TypeError
         self.role, self.color = role, color
 
-        # Load the properties from config.json
-        with open("config-good.json") as config:
-            data = json.load(config)
-
-        self.properties = data['Pieces'][self.role]
-
         # pyame stuff
         self.img = pygame.image.load(
             "pieces/" + self.color + self.role + ".png")
-        super().__init__(self.img, pos)
+        super().__init__(self.img, pos, "Pieces", self.role)
         self.UID = self.role
 
 
@@ -63,28 +86,17 @@ class Chest(Entity):
         # appartenance =  'O','b','w'
         self.appartenance = appartenance
 
-        # Load the properties from config.json
-        with open("config-good.json") as config:
-            data = json.load(config)
-
-        self.properties = data["Batiment"]["Chest"]
-
         # pygame stuff
         self.img = pygame.image.load("pieces/chest.png")
-        super().__init__(self.img, pos)
+        super().__init__(self.img, pos, "Batiment", "Chest")
         self.UID = "Chest"
 
 
 class Turret(Entity):
 
     def __init__(self, pos: tuple[int, int]):
+        super().__init__("", pos, "Batiment", "Turret")
         self.UID = "Turret"
-
-        # Load the properties from config.json
-        with open("config-good.json") as config:
-            data = json.load(config)
-
-        self.properties = data["Batiment"]["Turret"]
 
 
 class Filtre(pygame.sprite.Sprite):
