@@ -72,7 +72,7 @@ class Player:
         self.possibilite_attack = []
         self.sel_piece:Piece = None
         self.action_count = DEFAULT_ACTION_COUNT
-        self.pieces_mved = [] 
+        self.pieces_acted = [] 
 
 class MaitreDuJeu:
 
@@ -109,7 +109,7 @@ class MaitreDuJeu:
                 self.actions(self.fengine.events(), player)
             self.collect_money(player)
             player.action_count = DEFAULT_ACTION_COUNT
-            player.pieces_mved = []
+            player.pieces_acted = []
         self.repercussions()
 
     def mainloop(self) -> None:
@@ -155,15 +155,18 @@ class MaitreDuJeu:
         mouse = tuple(co // REEL_SIZE for co in mouse)
         #print(mouse)
         #print(tuple(co // REEL_SIZE for co in mouse))
-        sel_piece: list = [p for p in player.pieces if p.get_pos() == mouse and p not in player.pieces_mved]
+        try:
+            sel_piece: list = [p for p in player.pieces if p.get_pos() == mouse and p not in player.pieces_acted][0]
+        except IndexError:
+            sel_piece = None
         
-        if len(sel_piece) > 0:
+        if sel_piece != None:
             player.possibilite_mvto = []
             self.disable_highlight_all()
             player.pointing = True
-            player.possibilite_mvto = self.show_mvto(sel_piece[0])
-            player.sel_piece = sel_piece[0]
-            player.possibilite_attack = self.show_attack(sel_piece[0],[pl for pl in self.players if pl is not player][0])
+            player.possibilite_mvto = self.show_mvto(sel_piece)
+            player.sel_piece = sel_piece
+            player.possibilite_attack = self.show_attack(sel_piece,[pl for pl in self.players if pl is not player][0])
         elif player.pointing and mouse not in player.possibilite_mvto and mouse not in player.possibilite_attack:
             player.pointing = False
             player.possibilite_mvto = []
@@ -176,18 +179,28 @@ class MaitreDuJeu:
             player.possibilite_attack = []
             self.mvto(player.sel_piece,mouse)
             self.disable_highlight_all()
-            player.pieces_mved.append(player.sel_piece)
+            player.pieces_acted.append(player.sel_piece)
             player.sel_piece = None
             player.action_count -= 1
         elif player.pointing and mouse in player.possibilite_attack:
-            pass
+            player.pointing = False
+            player.possibilite_mvto = []
+            player.possibilite_attack = []
+            self.attack(player.sel_piece, [p for pl in self.players for p in pl.pieces if p.get_pos() == mouse and pl is not player][0])
+            self.disable_highlight_all()
+            player.pieces_acted.append(player.sel_piece)
+            player.sel_piece = None
+            player.action_count -= 1
 
     def attack(self, origin:Entity, cible:Entity):
         cible.properties["HP"] -= origin.properties["DPC"]
         if cible.properties["HP"] < 0:
-            del cible
-        if cible.properties["MAXHP"] < cible.properties["HP"]:
-            cible.properties["HP"] = cible.properties["MAXHP"]
+            self.unreference_piece(cible)
+        else:
+            if cible.properties["MAXHP"] < cible.properties["HP"]:
+                cible.properties["HP"] = cible.properties["MAXHP"]
+            cible.update_pv()
+        
 
     def mvto(self, cible:Entity, case:tuple[int,int]):
         cible.goto(*case)
@@ -195,7 +208,7 @@ class MaitreDuJeu:
         
 
     def show_attack(self, cible:Entity, target:Player) -> list:
-        adj = self.adjacent(cible.get_pos(), cible.properties["Range"])
+        adj = self.__adjacent(cible.get_pos(), cible.properties["Range"])
         piece_adv = [p.get_pos() for p in target.pieces]
         piece_att = []
         for case in adj:
@@ -206,7 +219,7 @@ class MaitreDuJeu:
 
 
     def show_mvto(self, cible:Entity) -> list:
-        adj = self.adjacent(cible.get_pos(), cible.properties["Agilité"])
+        adj = self.__adjacent(cible.get_pos(), cible.properties["Agilité"])
         exclusion = [obj.get_pos() for obj in self.players[0].pieces + self.players[1].pieces + self.MO.get_bat()]+self.MO.solid
         valide = []
         for case in adj:
@@ -223,7 +236,14 @@ class MaitreDuJeu:
         self.highlighted_cases = []
 
 
-    def adjacent(self, case: tuple[int, int], range: int, start: int = 0) -> list:
+    def unreference_piece(self, piece:Piece) -> None:
+        for player in self.players:
+            if piece in player.pieces:
+                player.pieces.remove(piece)
+        del piece
+
+
+    def __adjacent(self, case: tuple[int, int], range: int, start: int = 0) -> list:
         if start >= range:
             raise ValueError(
                 "The start point cannot be superior or equal to the total range")

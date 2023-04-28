@@ -40,6 +40,10 @@ class Entity(pygame.sprite.Sprite):
         # Prepare HPBAR
         self.hpbar = HPBar(self.properties["HP"])
 
+    def update_pv(self):
+        self.hpbar.hp = self.properties["HP"]
+        self.hpbar.update_prop()
+
 
     def goto(self, x: int = None, y: int = None):
         if (x, y) == (None, None):
