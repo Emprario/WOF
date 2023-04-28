@@ -163,20 +163,24 @@ class MaitreDuJeu:
             player.pointing = True
             player.possibilite_mvto = self.show_mvto(sel_piece[0])
             player.sel_piece = sel_piece[0]
-            self.show_attack(sel_piece[0],[pl for pl in self.players if pl is not player][0])
-        elif player.pointing and mouse not in player.possibilite_mvto:
+            player.possibilite_attack = self.show_attack(sel_piece[0],[pl for pl in self.players if pl is not player][0])
+        elif player.pointing and mouse not in player.possibilite_mvto and mouse not in player.possibilite_attack:
             player.pointing = False
             player.possibilite_mvto = []
+            player.possibilite_attack = []
             player.sel_piece = None
             self.disable_highlight_all()
         elif player.pointing and mouse in player.possibilite_mvto:
             player.pointing = False
             player.possibilite_mvto = []
+            player.possibilite_attack = []
             self.mvto(player.sel_piece,mouse)
             self.disable_highlight_all()
             player.pieces_mved.append(player.sel_piece)
             player.sel_piece = None
             player.action_count -= 1
+        elif player.pointing and mouse in player.possibilite_attack:
+            pass
 
     def attack(self, origin:Entity, cible:Entity):
         cible.properties["HP"] -= origin.properties["DPC"]
@@ -204,10 +208,12 @@ class MaitreDuJeu:
     def show_mvto(self, cible:Entity) -> list:
         adj = self.adjacent(cible.get_pos(), cible.properties["Agilité"])
         exclusion = [obj.get_pos() for obj in self.players[0].pieces + self.players[1].pieces + self.MO.get_bat()]+self.MO.solid
+        valide = []
         for case in adj:
             if case not in exclusion:
+                valide.append(case)
                 self.highlight_case(case,(0,0,255))
-        return adj
+        return valide
 
 
     def highlight_case(self, case:tuple[int,int],color:tuple[int,int,int]):
