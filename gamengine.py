@@ -186,7 +186,7 @@ class MaitreDuJeu:
             cible.properties["HP"] = cible.properties["MAXHP"]
 
     def mvto(self, cible:Entity, case:tuple[int,int]):
-        cible.pos = case
+        cible.goto(*case)
         
         
 
@@ -224,10 +224,14 @@ class MaitreDuJeu:
 
         def get_case(lstcases):
             return [case[0] for case in lstcases]
+        
         lstcases: list[list[tuple[int, int], int]] = [[case, 0]]
+        camp_sel = [player for player in self.players for p in player.pieces if p.get_pos() == case][0]
+        piecespos_al = [p.get_pos() for player in self.players for p in player.pieces if p.get_pos() != case and player != camp_sel]
+
         # Créer les cases
         for case_d in lstcases:
-            if case_d[1] > range or case_d[0] in self.MO.solid:
+            if case_d[1] > range or case_d[0] in self.MO.solid or case_d[0] in piecespos_al:
                 continue
             next = self.__adjacent_one(case_d[0])
             for case in next:
