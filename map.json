@@ -13,10 +13,8 @@
         "0": {},
         "1": {
             "Solid":true,
-            "Base": {
-                "DPC": -1,
-                "Agilité": -1
-            },
+            "Faiblesse": 2,
+            "Agilité": -1,
             "PassBy": {
                 "Agilté": -1
             }
@@ -25,34 +23,26 @@
             "Solid": true
         },
         "3": {
-            "Base": {
-                "Agilité": 3
-            }
+            "Agilité": 2,
+            "Faiblesse": 2
         },
         "4": {
-            "Base": {
-                "Agilité": 2,
-                "Faiblesse": 1
-            },
+            "Agilité": 2,
+            "Faiblesse": 2,
             "PassBy": {
                 "Agilité": -1
             }
         },
         "5": {
-            "Hide": 2,
-            "Base": {
-                "Range": -1,
-                "DPC": 1,
-                "Agilité": -1
-            },
+            "Hide": 1,
+            "Range": -1,
+            "DPC": 2,
+            "Agilité": -1,
             "PassBy": {
                 "Agilité": -1
             }
         },
         "6": {
-            "Solid": true
-        },
-        "7": {
             "Solid": true
         }
     },

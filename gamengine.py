@@ -18,6 +18,7 @@ class FeurEngine:
         self.active_pieces = []
         # Active Scene settings
         self.background = pygame.image.load("boards/900x900.png")
+        self.FONT=pygame.font.Font(None, 24)
 
     def load_background(self, texturemap) -> None:
         # self.display.blit(self.background,(0,0))
@@ -59,6 +60,14 @@ class FeurEngine:
     def blit_pieces(self):
         for piece in self.active_pieces:
             piece.blit(self.display)
+    
+    def blit_blank(self, msg:str | None =None):
+        self.display.blit(self.background, (0,0))
+        if msg != None:
+            text = self.FONT.render(msg,True,(255,255,255))
+            self.display.blit(text, (0,0))
+        pygame.display.flip()
+        
 
 
 class Player:
@@ -135,6 +144,8 @@ class MaitreDuJeu:
 
     def mainloop(self) -> None:
         # Initialisation
+        while self.fengine.events() == None:
+            self.fengine.blit_blank("Hello World")
         self.MO.load_file("maps/"+MAP_SEL)
         self.MO.load_map()
         self.MO.load_spwan()
@@ -280,8 +291,7 @@ class MaitreDuJeu:
 
     def __adjacent(self, case: tuple[int, int], range: int, start: int = 0, solid: bool = True, alter: bool = True) -> list:
         if start > range:
-            raise ValueError(
-                "The start point cannot be superior to the total range")
+            raise ValueError("The start point cannot be superior to the total range")
 
         def get_case(lstcases):
             return [case[0] for case in lstcases]
