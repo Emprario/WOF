@@ -66,10 +66,11 @@ class Player:
     def __init__(self, color: str):
         self.gold = 100
         self.color = color
-        self.pieces = []  # 1 grosse de chaque + 8 pions
+        self.pieces: list[Piece] = []  # 1 grosse de chaque + 8 pions
+        self.visible_pieces: list[Piece] = [] # Not on a case with the "Hide" attribute
         self.pointing = False
-        self.possibilite_mvto = []
-        self.possibilite_attack = []
+        self.possibilite_mvto: list[tuple[int,int]] = []
+        self.possibilite_attack: list[tuple[int,int]] = []
         self.sel_piece:Piece = None
         self.action_count = DEFAULT_ACTION_COUNT
         self.pieces_acted = [] 
@@ -77,7 +78,7 @@ class Player:
 class MaitreDuJeu:
 
     def __init__(self) -> None:
-        self.players = (Player('w'), Player('b'))
+        self.players:tuple[Player,Player] = (Player('w'), Player('b'))
         self.players_colors = ('w', 'b')
         self.MO = MapObject()
         self.fengine = FeurEngine()
@@ -88,6 +89,9 @@ class MaitreDuJeu:
         # Load config
         with open("config-good.json") as jsonconfig:
             self.config = json.load(jsonconfig)
+    
+    def get_other_player(self, player:Player) -> Player:
+        return [pl for pl in self.players if pl is not player][0]
 
     # def spwan_entities(self) -> None:
     #     ncoef: float = self.config["Sparse"]["ncoef"]
@@ -96,15 +100,33 @@ class MaitreDuJeu:
     #             raise KeyError(f"UID : '{unit.UID}' from '{unit}' not recognized or not in the configuration file")
     #         parsing = self.config["Sparse"][unit.UID]*ncoef
 
-    def update_registery(self) -> None:
-        self.registery: list[Entity] = self.highlighted_cases + self.players[0].pieces + \
-            self.players[1].pieces + self.MO.get_bat()
+    def update_registery(self, player:Player) -> None:
+        alter = self.get_other_player(player)
+        self.registery: list[Entity] = self.highlighted_cases + player.pieces + \
+            alter.visible_pieces + self.MO.get_bat()
         self.fengine.active_pieces = self.registery + self.hack
+
+    def update_visible_pieces(self) -> None:
+        for player in self.players:
+            player.visible_pieces = []
+            alter = self.get_other_player(player)
+            for piece in player.pieces:
+                x,y = piece.get_pos()
+                try:
+                    hiderng = self.MO.jsonconfig["Properties"][self.MO.mmap[y][x]]["Hide"]
+                    adj = self.__adjacent((x,y), hiderng, alter=False)
+                    for pc_al in alter.pieces:
+                        if pc_al.get_pos() in adj:
+                            player.visible_pieces.append(piece)
+                            break
+                except KeyError:
+                    player.visible_pieces.append(piece)
 
     def OneTour(self) -> None:
         for player in self.players:
             while player.action_count > 0:
-                self.update_registery()
+                self.update_visible_pieces()
+                self.update_registery(player)
                 self.fengine.display_update(player, self.MO.get_texturemap())
                 self.actions(self.fengine.events(), player)
             self.collect_money(player)
@@ -119,7 +141,8 @@ class MaitreDuJeu:
         self.MO.load_spwan()
         for i in range(2):
             self.players[i].pieces += self.MO.spwan[i]
-        self.update_registery()
+        self.update_registery(self.players[0])
+        self.update_visible_pieces()
         # self.spwan_entities()
         while not self.is_ended():
             self.OneTour()
@@ -166,7 +189,7 @@ class MaitreDuJeu:
             player.pointing = True
             player.possibilite_mvto = self.show_mvto(sel_piece)
             player.sel_piece = sel_piece
-            player.possibilite_attack = self.show_attack(sel_piece,[pl for pl in self.players if pl is not player][0])
+            player.possibilite_attack = self.show_attack(sel_piece,self.get_other_player(player))
         elif player.pointing and mouse not in player.possibilite_mvto and mouse not in player.possibilite_attack:
             player.pointing = False
             player.possibilite_mvto = []
@@ -222,8 +245,12 @@ class MaitreDuJeu:
         x,y = cible.get_pos()
         try:
             rng = cible.properties["Agilité"] + self.MO.jsonconfig["Properties"][self.MO.mmap[y][x]]["Base"]["Agilité"]
+            #("compo",cible.properties["Agilité"],self.MO.jsonconfig["Properties"][self.MO.mmap[y][x]]["Base"]["Agilité"])
         except KeyError:
             rng = cible.properties["Agilité"]
+            #("agilite alone")
+        if rng == 0:
+            rng = 1
         adj = self.__adjacent(cible.get_pos(), rng)
         exclusion = [obj.get_pos() for obj in self.players[0].pieces + self.players[1].pieces + self.MO.get_bat()]+self.MO.solid
         valide = []
@@ -248,21 +275,27 @@ class MaitreDuJeu:
         del piece
 
 
-    def __adjacent(self, case: tuple[int, int], range: int, start: int = 0) -> list:
-        if start >= range:
+    def __adjacent(self, case: tuple[int, int], range: int, start: int = 0, solid: bool = True, alter: bool = True) -> list:
+        if start > range:
             raise ValueError(
-                "The start point cannot be superior or equal to the total range")
+                "The start point cannot be superior to the total range")
 
         def get_case(lstcases):
             return [case[0] for case in lstcases]
         
         lstcases: list[list[tuple[int, int], int]] = [[case, 0]]
-        camp_sel = [player for player in self.players for p in player.pieces if p.get_pos() == case][0]
-        piecespos_al = [p.get_pos() for player in self.players for p in player.pieces if p.get_pos() != case and player != camp_sel]
+        if alter:
+            camp_sel = [player for player in self.players for p in player.pieces if p.get_pos() == case][0]
+            piecespos_al = [p.get_pos() for player in self.players for p in player.pieces if p.get_pos() != case and player != camp_sel]
 
         # Créer les cases
         for case_d in lstcases:
-            if case_d[1] > range or case_d[0] in self.MO.solid or case_d[0] in piecespos_al:
+            cond = case_d[1] >= range
+            if solid:
+                cond = cond or case_d[0] in self.MO.solid
+            if alter:
+                cond = cond or case_d[0] in piecespos_al
+            if cond:
                 continue
             next = self.__adjacent_one(case_d[0])
             for case in next:
