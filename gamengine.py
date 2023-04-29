@@ -111,10 +111,9 @@ class MaitreDuJeu:
             player.visible_pieces = []
             alter = self.get_other_player(player)
             for piece in player.pieces:
-                x,y = piece.get_pos()
                 try:
-                    hiderng = self.MO.jsonconfig["Properties"][self.MO.mmap[y][x]]["Hide"]
-                    adj = self.__adjacent((x,y), hiderng, alter=False)
+                    hiderng = self.MO.attribute_from_coor(piece.get_pos())["Hide"]
+                    adj = self.__adjacent(piece.get_pos(), hiderng, alter=False)
                     for pc_al in alter.pieces:
                         if pc_al.get_pos() in adj:
                             player.visible_pieces.append(piece)
@@ -216,8 +215,13 @@ class MaitreDuJeu:
             player.action_count -= 1
 
     def attack(self, origin:Entity, cible:Entity):
-        cible.properties["HP"] -= origin.properties["DPC"]
-        if cible.properties["HP"] < 0:
+        addons = 0
+        if "DPC" in self.MO.attribute_from_coor(origin.get_pos()):
+            addons += self.MO.attribute_from_coor(origin.get_pos())["DPC"]
+        if "Faiblesse" in self.MO.attribute_from_coor(cible.get_pos()):
+            addons += self.MO.attribute_from_coor(cible.get_pos())["Faiblesse"]
+        cible.properties["HP"] -= origin.properties["DPC"] + addons
+        if cible.properties["HP"] <= 0:
             self.unreference_piece(cible)
         else:
             if cible.properties["MAXHP"] < cible.properties["HP"]:
@@ -242,9 +246,8 @@ class MaitreDuJeu:
 
 
     def show_mvto(self, cible:Entity) -> list:
-        x,y = cible.get_pos()
         try:
-            rng = cible.properties["Agilité"] + self.MO.jsonconfig["Properties"][self.MO.mmap[y][x]]["Base"]["Agilité"]
+            rng = cible.properties["Agilité"] + self.MO.attribute_from_coor(cible.get_pos())["Agilité"]
             #("compo",cible.properties["Agilité"],self.MO.jsonconfig["Properties"][self.MO.mmap[y][x]]["Base"]["Agilité"])
         except KeyError:
             rng = cible.properties["Agilité"]

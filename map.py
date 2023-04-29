@@ -21,6 +21,9 @@ class MapObject:
         tf = open(self.JSON_PATH)
         self.jsonconfig = json.load(tf)
         tf.close()
+    
+    def attribute_from_coor(self, case_co:tuple[int,int]):
+        return self.jsonconfig["Properties"][self.mmap[case_co[1]][case_co[0]][0]]
 
     def get_bat(self) -> list[object]:
         return self.bat

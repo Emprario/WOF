@@ -13,6 +13,7 @@ class HPBar(pygame.sprite.Sprite):
         self.surface.fill((200,0,0))
 
     def update_prop(self):
+        print(self.hp)
         self.size = self.hp * REEL_SIZE / self.MAXHP
         self.surface = pygame.Surface((self.size, REEL_SIZE/10))
         self.surface.fill((200,0,0))
