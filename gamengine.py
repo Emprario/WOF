@@ -219,7 +219,12 @@ class MaitreDuJeu:
 
 
     def show_mvto(self, cible:Entity) -> list:
-        adj = self.__adjacent(cible.get_pos(), cible.properties["Agilité"])
+        x,y = cible.get_pos()
+        try:
+            rng = cible.properties["Agilité"] + self.MO.jsonconfig["Properties"][self.MO.mmap[y][x]]["Base"]["Agilité"]
+        except KeyError:
+            rng = cible.properties["Agilité"]
+        adj = self.__adjacent(cible.get_pos(), rng)
         exclusion = [obj.get_pos() for obj in self.players[0].pieces + self.players[1].pieces + self.MO.get_bat()]+self.MO.solid
         valide = []
         for case in adj:

@@ -15,6 +15,12 @@ class MapObject:
         self.solid: list[tuple] = []
         self.spwan: list[list[Piece], list[Piece]] = [[], []]
         self.JSON_PATH = "map.json"
+        self.content = None
+
+        # main layout
+        tf = open(self.JSON_PATH)
+        self.jsonconfig = json.load(tf)
+        tf.close()
 
     def get_bat(self) -> list[object]:
         return self.bat
@@ -45,13 +51,8 @@ class MapObject:
         for line in stack:
             self.mmap.append(line.split())
 
-        # main layout
-        tf = open(self.JSON_PATH)
-        jsonconfig = json.load(tf)
-        tf.close()
-
-        solidlist = [bc for bc in jsonconfig["Properties"] if "Solid" in jsonconfig["Properties"]
-                     [bc] and jsonconfig["Properties"][bc]["Solid"] == True]
+        solidlist = [bc for bc in self.jsonconfig["Properties"] if "Solid" in self.jsonconfig["Properties"]
+                     [bc] and self.jsonconfig["Properties"][bc]["Solid"] == True]
 
         allzone = []
         for y in range(len(self.mmap)):
@@ -84,7 +85,7 @@ class MapObject:
                     i += 1
 
         # Texture
-        texturefile = jsonconfig["Texture"]
+        texturefile = self.jsonconfig["Texture"]
 
         self.texturemap = [[None for j in range(len(self.mmap))]
                            for i in range(len(self.mmap))]
