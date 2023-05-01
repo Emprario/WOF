@@ -1,4 +1,5 @@
 from RESSOURCE import MAP_SEL
+from player import Player
 from entities import Chest, Turret, Entity, Piece
 import json
 from random import choice

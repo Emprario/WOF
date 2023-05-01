@@ -1,6 +1,7 @@
 import pygame
 import json
 from entities import Entity, Piece, Chest, Filtre
+from player import Player
 from map import MapObject
 from RESSOURCE import MAP_SEL, REEL_SIZE, DEFAULT_ACTION_COUNT
 
@@ -18,7 +19,10 @@ class FeurEngine:
         self.active_pieces = []
         # Active Scene settings
         self.background = pygame.image.load("boards/900x900.png")
-        self.FONT=pygame.font.Font(None, 24)
+        self.darkness = pygame.Surface( (900,900) )
+        self.darkness.fill((0,0,0))
+        self.darkness.set_alpha(125)
+        self.FONT=pygame.font.Font(None, 80)
 
     def load_background(self, texturemap) -> None:
         # self.display.blit(self.background,(0,0))
@@ -61,28 +65,23 @@ class FeurEngine:
         for piece in self.active_pieces:
             piece.blit(self.display)
     
-    def blit_blank(self, msg:str | None =None):
-        self.display.blit(self.background, (0,0))
+    def blit_blank(self, msg:str | None =None, subtitle:str | None =None):
+        toblit: list[tuple] = []
         if msg != None:
-            text = self.FONT.render(msg,True,(255,255,255))
-            self.display.blit(text, (0,0))
+            text = self.FONT.render(msg,True,(69,49,229))
+            w = (900 - text.get_width())/2
+            h = (900 - text.get_height())/2-250
+            toblit.append((text, (w,h)))
+        if subtitle != None:
+            text = self.FONT.render(subtitle,True,(79,59,239))
+            w = (900 - text.get_width())/2
+            h = toblit[0][1][1]+toblit[0][0].get_height()
+            toblit.append((text, (w,h)))
+        self.display.blit(self.background, (0,0))
+        self.display.blit(self.darkness, (0,0))
+        for el in toblit:
+            self.display.blit(*el)
         pygame.display.flip()
-        
-
-
-class Player:
-
-    def __init__(self, color: str):
-        self.gold = 100
-        self.color = color
-        self.pieces: list[Piece] = []  # 1 grosse de chaque + 8 pions
-        self.visible_pieces: list[Piece] = [] # Not on a case with the "Hide" attribute
-        self.pointing = False
-        self.possibilite_mvto: list[tuple[int,int]] = []
-        self.possibilite_attack: list[tuple[int,int]] = []
-        self.sel_piece:Piece = None
-        self.action_count = DEFAULT_ACTION_COUNT
-        self.pieces_acted = [] 
 
 class MaitreDuJeu:
 
@@ -115,25 +114,24 @@ class MaitreDuJeu:
             alter.visible_pieces + self.MO.get_bat()
         self.fengine.active_pieces = self.registery + self.hack
 
-    def update_visible_pieces(self) -> None:
-        for player in self.players:
-            player.visible_pieces = []
-            alter = self.get_other_player(player)
-            for piece in player.pieces:
-                try:
-                    hiderng = self.MO.attribute_from_coor(piece.get_pos())["Hide"]
-                    adj = self.__adjacent(piece.get_pos(), hiderng, alter=False)
-                    for pc_al in alter.pieces:
-                        if pc_al.get_pos() in adj:
-                            player.visible_pieces.append(piece)
-                            break
-                except KeyError:
-                    player.visible_pieces.append(piece)
+    def update_visible_pieces(self, player:Player) -> None:
+        player.visible_pieces = []
+        alter = self.get_other_player(player)
+        for piece in player.pieces:
+            try:
+                hiderng = self.MO.attribute_from_coor(piece.get_pos())["Hide"]
+                adj = self.__adjacent(piece.get_pos(), hiderng, alter=False)
+                for pc_al in alter.pieces:
+                    if pc_al.get_pos() in adj:
+                        player.visible_pieces.append(piece)
+                        break
+            except KeyError:
+                player.visible_pieces.append(piece)
 
     def OneTour(self) -> None:
         for player in self.players:
             while player.action_count > 0:
-                self.update_visible_pieces()
+                self.update_visible_pieces(player)
                 self.update_registery(player)
                 self.fengine.display_update(player, self.MO.get_texturemap())
                 self.actions(self.fengine.events(), player)
@@ -145,14 +143,19 @@ class MaitreDuJeu:
     def mainloop(self) -> None:
         # Initialisation
         while self.fengine.events() == None:
-            self.fengine.blit_blank("Hello World")
+            self.fengine.blit_blank("Hello World","Cliquer pour commencer ...")
         self.MO.load_file("maps/"+MAP_SEL)
         self.MO.load_map()
         self.MO.load_spwan()
         for i in range(2):
             self.players[i].pieces += self.MO.spwan[i]
+            for piece in self.players[i].pieces:
+                if "AttackAllies" in piece.properties and piece.properties["AttackAllies"] == True:
+                    piece.load_camps(self.players[i], self.players[i])
+                else:
+                    piece.load_camps(self.players[i], self.players[(i+1)%2])
+            self.update_visible_pieces(self.players[i])
         self.update_registery(self.players[0])
-        self.update_visible_pieces()
         # self.spwan_entities()
         while not self.is_ended():
             self.OneTour()
@@ -163,7 +166,6 @@ class MaitreDuJeu:
 
     def is_ended(self) -> bool:
         chest = {'w': False, 'b': False}
-        # print(self.players)
         for player in self.players:
             for bat in self.MO.get_bat():
                 if isinstance(bat, Chest) and bat.appartenance == player.color:
@@ -186,21 +188,12 @@ class MaitreDuJeu:
         if mouse == None:
             return
         mouse = tuple(co // REEL_SIZE for co in mouse)
-        #print(mouse)
-        #print(tuple(co // REEL_SIZE for co in mouse))
         try:
-            sel_piece: list = [p for p in player.pieces if p.get_pos() == mouse and p not in player.pieces_acted][0]
+            sel_piece: Piece = [p for p in player.pieces if p.get_pos() == mouse and p not in player.pieces_acted][0]
         except IndexError:
             sel_piece = None
         
-        if sel_piece != None:
-            player.possibilite_mvto = []
-            self.disable_highlight_all()
-            player.pointing = True
-            player.possibilite_mvto = self.show_mvto(sel_piece)
-            player.sel_piece = sel_piece
-            player.possibilite_attack = self.show_attack(sel_piece,self.get_other_player(player))
-        elif player.pointing and mouse not in player.possibilite_mvto and mouse not in player.possibilite_attack:
+        if player.pointing and mouse not in player.possibilite_mvto and mouse not in player.possibilite_attack:
             player.pointing = False
             player.possibilite_mvto = []
             player.possibilite_attack = []
@@ -219,11 +212,18 @@ class MaitreDuJeu:
             player.pointing = False
             player.possibilite_mvto = []
             player.possibilite_attack = []
-            self.attack(player.sel_piece, [p for pl in self.players for p in pl.pieces if p.get_pos() == mouse and pl is not player][0])
+            self.attack(player.sel_piece, [p for pl in self.players for p in pl.pieces if p.get_pos() == mouse and pl is player.sel_piece.oppocamp][0])
             self.disable_highlight_all()
             player.pieces_acted.append(player.sel_piece)
             player.sel_piece = None
             player.action_count -= 1
+        elif sel_piece != None:
+            player.possibilite_mvto = []
+            self.disable_highlight_all()
+            player.pointing = True
+            player.possibilite_mvto = self.show_mvto(sel_piece)
+            player.sel_piece = sel_piece
+            player.possibilite_attack = self.show_attack(sel_piece,sel_piece.oppocamp)
 
     def attack(self, origin:Entity, cible:Entity):
         addons = 0

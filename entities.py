@@ -13,7 +13,6 @@ class HPBar(pygame.sprite.Sprite):
         self.surface.fill((200,0,0))
 
     def update_prop(self):
-        print(self.hp)
         self.size = self.hp * REEL_SIZE / self.MAXHP
         self.surface = pygame.Surface((self.size, REEL_SIZE/10))
         self.surface.fill((200,0,0))
@@ -71,9 +70,11 @@ class Entity(pygame.sprite.Sprite):
 
 class Piece(Entity):
 
-    def __init__(self, color: str, role: str, pos: tuple[int, int]):
+    def __init__(self, color, role: str, pos: tuple[int, int]):
         self.roles = ('B', 'K', 'N', 'P', 'Q', 'R')
         self.colors = ('w', 'b')
+        self.camp = None
+        self.oppocamp = None
         if color not in self.colors or role not in self.roles:
             raise TypeError
         self.role, self.color = role, color
@@ -83,6 +84,10 @@ class Piece(Entity):
             "pieces/" + self.color + self.role + ".png")
         super().__init__(self.img, pos, "Pieces", self.role)
         self.UID = self.role
+    
+    def load_camps(self, camp, oppocamp):
+        self.camp = camp
+        self.oppocamp = oppocamp
 
 
 class Chest(Entity):

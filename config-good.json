@@ -37,9 +37,10 @@
             "FullName": "Fou Soin",
             "MAXHP": 10,
             "HP": 10,
-            "DPC": -3,
+            "DPC": -5,
             "Agilité": 5,
-            "Range": 4
+            "Range": 4,
+            "AttackAllies":true
         },
         "N": {
             "FullName": "Cavalier NWAR",
