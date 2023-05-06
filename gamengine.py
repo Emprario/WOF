@@ -114,24 +114,27 @@ class MaitreDuJeu:
             alter.visible_pieces + self.MO.get_bat()
         self.fengine.active_pieces = self.registery + self.hack
 
-    def update_visible_pieces(self, player:Player) -> None:
-        player.visible_pieces = []
-        alter = self.get_other_player(player)
-        for piece in player.pieces:
-            try:
-                hiderng = self.MO.attribute_from_coor(piece.get_pos())["Hide"]
-                adj = self.__adjacent(piece.get_pos(), hiderng, alter=False)
-                for pc_al in alter.pieces:
-                    if pc_al.get_pos() in adj:
-                        player.visible_pieces.append(piece)
-                        break
-            except KeyError:
-                player.visible_pieces.append(piece)
+    def update_visible_pieces(self) -> None:
+        for player in self.players:
+            player.visible_pieces = []
+            alter = self.get_other_player(player)
+            for piece in player.pieces:
+                try:
+                    hiderng = self.MO.attribute_from_coor(piece.get_pos())["Hide"]
+                    adj = self.__adjacent(piece.get_pos(), hiderng, alter=False)
+                    for pc_al in alter.pieces:
+                        if pc_al.get_pos() in adj:
+                            player.visible_pieces.append(piece)
+                            break
+                except KeyError:
+                    player.visible_pieces.append(piece)
 
     def OneTour(self) -> None:
         for player in self.players:
+            while self.fengine.events() == None:
+                self.fengine.blit_blank("En attente du prochain joueur","Cliquer pour commencer ...")
             while player.action_count > 0:
-                self.update_visible_pieces(player)
+                self.update_visible_pieces()
                 self.update_registery(player)
                 self.fengine.display_update(player, self.MO.get_texturemap())
                 self.actions(self.fengine.events(), player)
@@ -154,7 +157,7 @@ class MaitreDuJeu:
                     piece.load_camps(self.players[i], self.players[i])
                 else:
                     piece.load_camps(self.players[i], self.players[(i+1)%2])
-            self.update_visible_pieces(self.players[i])
+        self.update_visible_pieces()
         self.update_registery(self.players[0])
         # self.spwan_entities()
         while not self.is_ended():
