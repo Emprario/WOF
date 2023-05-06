@@ -90,31 +90,37 @@ class MapObject:
 
         # Texture
         texturefile = self.jsonconfig["Texture"]
-        connexetxt: list[tuple[str,tuple[int,int]]] = []
+        #connexetxt: list[tuple[str,tuple[int,int]]] = []
 
         self.texturemap = [[None for j in range(len(self.mmap))]
                            for i in range(len(self.mmap))]
         for y in range(len(self.mmap)):
             for x in range(len(self.mmap)):
                 casetype = self.mmap[y][x][0]
+                # try:
+                #     if texturefile[casetype]["connexe"]:
+                #         connexetxt.append((casetype,(y,x)))
+                # except KeyError:
+                #     try:
+                #         self.texturemap[y][x] = pygame.image.load(texturefile["rootpath"] +
+                #                                                   choice(texturefile[casetype]["variations"]))
+                #     except KeyError:
+                #         self.texturemap[y][x] = pygame.image.load(texturefile[
+                #             "rootpath"] + "no-texture.png")
                 try:
-                    if texturefile[casetype]["connexe"]:
-                        connexetxt.append((casetype,(y,x)))
+                    self.texturemap[y][x] = pygame.image.load(texturefile["rootpath"] +
+                                                            choice(texturefile[casetype]["variations"]))
                 except KeyError:
-                    try:
-                        self.texturemap[y][x] = pygame.image.load(texturefile["rootpath"] +
-                                                                  choice(texturefile[casetype]["variations"]))
-                    except KeyError:
-                        self.texturemap[y][x] = pygame.image.load(texturefile[
-                            "rootpath"] + "no-texture.png")
-        print(connexetxt)
-        for txt in connexetxt:
-            adj = self.__adjacent(txt[1])
-            gene = [xy for xy in connexetxt if xy[0] == txt[0] and xy[1] in adj]
-            for i in range(5):
-                if len(gene) == i:
-                    print(self.texturemap)
-                    self.texturemap[txt[1][1]][txt[1][0]] = pygame.image.load(texturefile["rootpath"] + texturefile[txt[0]]["connexe"][str(i)])
+                    self.texturemap[y][x] = pygame.image.load(texturefile[
+                    "rootpath"] + "no-texture.png")
+        # print(connexetxt)
+        # for txt in connexetxt:
+        #     adj = self.__adjacent(txt[1])
+        #     gene = [xy for xy in connexetxt if xy[0] == txt[0] and xy[1] in adj]
+        #     for i in range(5):
+        #         if len(gene) == i:
+        #             print(self.texturemap)
+        #             self.texturemap[txt[1][1]][txt[1][0]] = pygame.image.load(texturefile["rootpath"] + texturefile[txt[0]]["connexe"][str(i)])
             
 
     def load_spwan(self):

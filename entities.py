@@ -32,7 +32,7 @@ class Entity(pygame.sprite.Sprite):
 
         # Def properties
         # Load the properties from config.json
-        with open("config-good.json") as config:
+        with open("config-good.json", "r", encoding="utf-8") as config:
             data = json.load(config)
 
         self.properties = data[type][subtype]
@@ -104,7 +104,10 @@ class Chest(Entity):
 
 class Turret(Entity):
 
-    def __init__(self, pos: tuple[int, int]):
+    def __init__(self, appartenance: str, pos: tuple[int, int]):
+        # appartenance =  'O','b','w'
+        self.appartenance = appartenance
+
         super().__init__("", pos, "Batiment", "Turret")
         self.UID = "Turret"
 

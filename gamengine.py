@@ -110,8 +110,8 @@ class MaitreDuJeu:
 
     def update_registery(self, player:Player) -> None:
         alter = self.get_other_player(player)
-        self.registery: list[Entity] = self.highlighted_cases + player.pieces + \
-            alter.visible_pieces + self.MO.get_bat()
+        self.registery: list[Entity] =  player.pieces + \
+            alter.visible_pieces + self.MO.get_bat() + self.highlighted_cases
         self.fengine.active_pieces = self.registery + self.hack
 
     def update_visible_pieces(self) -> None:
@@ -133,7 +133,7 @@ class MaitreDuJeu:
         for player in self.players:
             while self.fengine.events() == None:
                 self.fengine.blit_blank("En attente du prochain joueur","Cliquer pour commencer ...")
-            while player.action_count > 0:
+            while player.action_count > 0 and not self.is_ended():
                 self.update_visible_pieces()
                 self.update_registery(player)
                 self.fengine.display_update(player, self.MO.get_texturemap())
@@ -141,6 +141,7 @@ class MaitreDuJeu:
             self.collect_money(player)
             player.action_count = DEFAULT_ACTION_COUNT
             player.pieces_acted = []
+            if self.is_ended():break
         self.repercussions()
 
     def mainloop(self) -> None:
@@ -215,7 +216,9 @@ class MaitreDuJeu:
             player.pointing = False
             player.possibilite_mvto = []
             player.possibilite_attack = []
-            self.attack(player.sel_piece, [p for pl in self.players for p in pl.pieces if p.get_pos() == mouse and pl is player.sel_piece.oppocamp][0])
+            obj = [p for pl in self.players for p in pl.pieces if p.get_pos() == mouse and pl is player.sel_piece.oppocamp] + \
+                  [bat for bat in self.MO.bat if bat.appartenance]
+            self.attack(player.sel_piece, obj[0])
             self.disable_highlight_all()
             player.pieces_acted.append(player.sel_piece)
             player.sel_piece = None
@@ -235,6 +238,7 @@ class MaitreDuJeu:
         if "Faiblesse" in self.MO.attribute_from_coor(cible.get_pos()):
             addons += self.MO.attribute_from_coor(cible.get_pos())["Faiblesse"]
         cible.properties["HP"] -= origin.properties["DPC"] + addons
+        print(cible.properties)
         if cible.properties["HP"] <= 0:
             self.unreference_piece(cible)
         else:
@@ -251,9 +255,10 @@ class MaitreDuJeu:
     def show_attack(self, cible:Entity, target:Player) -> list:
         adj = self.__adjacent(cible.get_pos(), cible.properties["Range"])
         piece_adv = [p.get_pos() for p in target.pieces]
+        chest_adv = [bat.get_pos() for bat in self.MO.get_bat() if isinstance(bat,Chest) and bat.appartenance != target.color]
         piece_att = []
         for case in adj:
-            if case in piece_adv:
+            if case in piece_adv + chest_adv:
                 self.highlight_case(case,(255,0,0))
                 piece_att.append(case)
         return piece_att
@@ -289,6 +294,9 @@ class MaitreDuJeu:
         for player in self.players:
             if piece in player.pieces:
                 player.pieces.remove(piece)
+        for bat in self.MO.bat:
+            if bat == piece:
+                self.MO.bat.remove(piece)
         del piece
 
 

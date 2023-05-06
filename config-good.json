@@ -76,9 +76,9 @@
             "LootTable": "a"
         },
         "Chest": {
-            "FullName": "Turret",
+            "FullName": "Chest",
             "MAXHP": 80,
-            "HP": 80,
+            "HP": 10,
             "DPC": 0,
             "Agilité": -1,
             "Range": -1,
