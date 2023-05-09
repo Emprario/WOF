@@ -1,16 +1,16 @@
-from _typeshed import Incomplete
+from entities import Piece
 
-Color: Incomplete
+Color = "w" | "b"
 
 class Player:
     gold: int
-    color: Incomplete
-    pieces: Incomplete
-    visible_pieces: Incomplete
+    color: Color
+    pieces: list[Piece]
+    visible_pieces: list[Piece]
     pointing: bool
-    possibilite_mvto: Incomplete
-    possibilite_attack: Incomplete
-    sel_piece: Incomplete
-    action_count: Incomplete
-    pieces_acted: Incomplete
+    possibilite_mvto: list[tuple[int, int]]
+    possibilite_attack: list[tuple[int, int]]
+    sel_piece: Piece
+    action_count: int
+    pieces_acted: list[Piece]
     def __init__(self, color: str) -> None: ...
