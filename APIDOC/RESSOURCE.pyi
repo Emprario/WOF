@@ -1,0 +1,4 @@
+REEL_SIZE: int
+MAP_SEL: str
+DEFAULT_ACTION_COUNT: int
+JSON_PATH: str
