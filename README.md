@@ -1,6 +1,45 @@
 # WOF
 World Of Feur -- Powered by FeurEngine
 
+## Introduction
+Ce projet a pour but de faire tourner un jeux vidéo avec des technologies décrites [ici](#analyse-et-conception) aux critères définis ci-après. 
+Le jeu en question est au tour par tour, le but est de détruire le coffre adverse en utilisant ses pions et ces pièces. Chaque pièce à des propriétés intrasecs à toutes (i.e. les points de vies, les dégats données par coups, la portée de l'attaque, les déplacements). Peut également s'y ajouter des attributs spécifiques (ex: le fou soigne ses alliés à la place d'attaquer). Les cases ont elles aussi, de la meme manière des attributs communs (peut-on passer au travers de la case, peut-on y aller plus rapidement, ...) et spécifique (on peut se cacher de la vision adverse dans des bushs). 
+
+## Description du projet
+
+### Exigence fonctionnelles
+
+### Exigence non fonctionnelles
+
+## Analyse et conception
+
+### Spécification des exigences : les cas d'utilisations
+
+### Analyse du domaine : le diagramme de classe
+
+### La conception fonctionnelle
+
+### La conception technique
+
+### La conception graphique 
+
+## Réalisation technique
+
+### Les languages utilisés
+
+### Les tests
+
+## Organisation et bilan du projet
+
+### Organisation du groupe : méthode de travail
+
+### Résultat
+
+### Améliorations envisagées
+
+## Conclusion
+
+
 Technologies utilisés:
 * Version python : >= 3.10
 * Module graphique : pygame
