@@ -1,42 +1,51 @@
-from RESSOURCE import MAP_SEL
-from player import Player
-from entities import Chest, Turret, Entity, Piece
+from entities import Chest, Piece, Entity
+from RESSOURCE import JSON_PATH
 import json
 from random import choice
 import pygame
 
 
 class MapObject:
+    """Stocke la map comme un objet manipulable (ainsi que ses attributs)"""
 
-    def __init__(self):
-        self.bat = []
+    def __init__(self) -> None:
+        self.bat: list[Entity] = []
         self.gold_zone: list[list[tuple[int, int]]] = []
-        self.mmap = [[]]
-        self.texturemap = [[]]
+        self.mmap: list[list[str]] = [[]]
+        self.texturemap: list[list[pygame.Surface]] = [[]]
         self.solid: list[tuple] = []
         self.spwan: list[list[Piece], list[Piece]] = [[], []]
-        self.JSON_PATH = "map.json"
-        self.content = None
+        self.content: list[str] = None
 
         # main layout
-        tf = open(self.JSON_PATH)
-        self.jsonconfig = json.load(tf)
+        tf = open(JSON_PATH)
+        self.jsonconfig: dict = json.load(tf)
         tf.close()
     
-    def attribute_from_coor(self, case_co:tuple[int,int]):
+    def attribute_from_coor(self, case_co:tuple[int,int]) -> dict:
+        """Get the attribute from the coordonate of a case"""
         return self.jsonconfig["Properties"][self.mmap[case_co[1]][case_co[0]][0]]
 
-    def get_bat(self) -> list[object]:
+    def get_bat(self) -> list[Entity]:
+        """Renvoie la liste des batiments"""
         return self.bat
 
-    def get_texturemap(self) -> list[object]:
+    def get_texturemap(self) -> list[list[pygame.Surface]]:
+        """Renvoie la matrice de texture chargée par pygame"""
         return self.texturemap
 
-    def load_file(self, filepath: str):
+    def load_file(self, filepath: str) -> None:
+        """Charge le fichier en mémoire sous 'self.content'"""
         with open(filepath, 'r') as map:
             self.content = [line for line in map]
 
     def record_info(self, descriptor: str) -> list[str]:
+        """
+        Record une info dans le contenu de la variable 'MapObject.content'
+        /!\ Le fichier doit être chargé
+        """
+        if self.content == None:
+            raise Exception("Le fichier doit être chargé d'abord à l'aide de 'MapObject.load_file'")
         record = False
         stack = []
         for line in self.content:
@@ -49,7 +58,15 @@ class MapObject:
                 stack.append(line[:-1])
         return stack
 
-    def load_map(self):
+    def load_map(self) -> None:
+        """
+        Charge les composantes de la map dans 
+        - 'MapObject.mmap': enregistrement brute de la mattrice de case
+        - 'MapObject.solid': enregistre les cases solides
+        - 'MapObject.bat': les batiments 
+        - 'MapObject.gold_zone': les zones de gold
+        - 'MapObject.texturemap': La map des textures chargés dans pygame
+        """
         stack = self.record_info("layout")
         self.mmap: list[list[str]] = []
         for line in stack:
@@ -123,7 +140,8 @@ class MapObject:
         #             self.texturemap[txt[1][1]][txt[1][0]] = pygame.image.load(texturefile["rootpath"] + texturefile[txt[0]]["connexe"][str(i)])
             
 
-    def load_spwan(self):
+    def load_spwan(self) -> None:
+        """Charge en mémoire dans la variable 'MapObject.spawn' les pieces de chaque camp (bien ordonée) sous forme de listes de Pieces"""
         for camp in (("white", 0), ("black", 1)):
             spawns = self.record_info("spwan "+camp[0])
             squares_b: list[tuple, tuple] = []
