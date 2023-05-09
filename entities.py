@@ -124,3 +124,9 @@ class Filtre(pygame.sprite.Sprite):
 
     def blit(self,DISPLAY_SURF):
         DISPLAY_SURF.blit(self.image, [pos * REEL_SIZE for pos in self.pos])
+
+if __name__=="__main__":
+    print("Please don't run this file ! \n" \
+          "Run this instead : \n " \
+          "* (windows) `py main.py` \n " \
+          "* (linux) `chmod +x main.py` then `./main.py` ")

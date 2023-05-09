@@ -174,3 +174,10 @@ class MapObject:
     def __adjacent(self, case):
         return [(case[0] + 1, case[1]), (case[0], case[1] + 1),
                 (case[0] - 1, case[1]), (case[0], case[1] - 1)]
+
+
+if __name__=="__main__":
+    print("Please don't run this file ! \n" \
+          "Run this instead : \n " \
+          "* (windows) `py main.py` \n " \
+          "* (linux) `chmod +x main.py` then `./main.py` ")
