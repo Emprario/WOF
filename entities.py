@@ -1,7 +1,6 @@
 import pygame
 import json
 from RESSOURCE import REEL_SIZE
-from player import Color
 
 
 class HPBar(pygame.sprite.Sprite):
@@ -85,7 +84,7 @@ class Entity(pygame.sprite.Sprite):
 class Piece(Entity):
     """Une piece d'échec associé à joueur"""
 
-    def __init__(self, color: Color, role: str, pos: tuple[int, int]) -> None:
+    def __init__(self, color, role: str, pos: tuple[int, int]) -> None:
         self.roles = ('B', 'K', 'N', 'P', 'Q', 'R')
         self.colors = ('w', 'b')
         self.camp = None
