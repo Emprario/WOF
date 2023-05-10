@@ -32,7 +32,7 @@ class Entity(pygame.sprite.Sprite):
     Possède une fonction d'affichage propre (à utiliser de préférence à la place de blit: 'Entity.blit')
     """
 
-    def __init__(self, texture: pygame.image, pos: tuple[int, int], type: str, subtype: str):
+    def __init__(self, texture: pygame.Surface, pos: tuple[int, int], type: str, subtype: str):
         super().__init__()
         if texture != None:
             self.img = texture
@@ -40,7 +40,6 @@ class Entity(pygame.sprite.Sprite):
             self.img = pygame.image.load("tiles/no-texture.png")
         self.surface = pygame.Surface((REEL_SIZE, REEL_SIZE))
         self.pos = pos  # By case
-        self.UID = None
 
         # Def properties
         # Load the properties from config.json
@@ -99,7 +98,6 @@ class Piece(Entity):
         self.img = pygame.image.load(
             "pieces/" + self.color + self.role + ".png")
         super().__init__(self.img, pos, "Pieces", self.role)
-        self.UID = self.role
 
     def load_camps(self, camp: object, oppocamp: object):
         """
@@ -120,7 +118,6 @@ class Chest(Entity):
         # pygame stuff
         self.img = pygame.image.load("pieces/chest.png")
         super().__init__(self.img, pos, "Batiment", "Chest")
-        self.UID = "Chest"
 
 
 # class Turret(Entity):
