@@ -39,7 +39,7 @@ Le jeu en question est au tour par tour, le but est de détruire le coffre adver
     * __[/APIDOC/](/APIDOC/)__, dossier de documentation de l'API du jeu
     * __[README.md](/README.md)__, fichier de documentation général :)
     
-    [comment] # (__[MAP.md]__, fichier de documentation des fichiers d'extension .map)
+    [comment] # (__MAP.md__, fichier de documentation des fichiers d'extension .map)
 
 Description fichier par fichier:
 * __[player.py](/player.py)__
