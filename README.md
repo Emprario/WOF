@@ -32,6 +32,7 @@ Le jeu en question est au tour par tour, le but est de détruire le coffre adver
     * __[config-good.json](/config-good.json)__, pour la configurations des pieces (points de vies, dégats par coups, caractéristiques, ...)
     * __[map.json](/map.json)__, pour la configuration de la map (nom des cases, numéro d'attribution, caractéritiques, avantages, ...)
     * __[RESSOURCES.py](/RESSOURCE.py)__, constances liés aux différentes configurations diverses
+    * __[.gitignore](/.gitignore)__, fichier de configuration du repo git
 * Ressources :
     * __[/tiles/](/tiles/)__, pour les images des tuiles *- (45x45px)*
     * __[/pieces/](/pieces/)__, textures des pieces, format : *campPIECE.png - (45x45px)*
