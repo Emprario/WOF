@@ -1,14 +1,15 @@
-from _typeshed import Incomplete
-from entities import Entity, Piece
+import pygame
+from entities import Entity, Piece, Filtre
 from player import Player
+from map import MapObject
 
 class FeurEngine:
-    size: Incomplete
-    display: Incomplete
-    active_pieces: Incomplete
-    background: Incomplete
-    darkness: Incomplete
-    FONT: Incomplete
+    size: tuple[int,int]
+    display: pygame.Surface
+    active_pieces: list[Piece]
+    background: pygame.Surface
+    darkness: pygame.Surface
+    FONT: pygame.font.Font
     def __init__(self) -> None: ...
     def load_background(self, texturemap) -> None: ...
     def load_interface(self, player) -> None: ...
@@ -18,14 +19,14 @@ class FeurEngine:
     def blit_blank(self, msg: str | None = ..., subtitle: str | None = ...): ...
 
 class MaitreDuJeu:
-    players: Incomplete
-    players_colors: Incomplete
-    MO: Incomplete
-    fengine: Incomplete
-    registery: Incomplete
-    hack: Incomplete
-    highlighted_cases: Incomplete
-    config: Incomplete
+    players: tuple[Player,Player]
+    players_colors: tuple[str,str]
+    MO: MapObject
+    fengine: FeurEngine
+    registery: list[pygame.sprite.Sprite]
+    hack: list[pygame.sprite.Sprite]
+    highlighted_cases: list[Filtre]
+    config: dict
     def __init__(self) -> None: ...
     def get_other_player(self, player: Player) -> Player: ...
     def update_registery(self, player: Player) -> None: ...

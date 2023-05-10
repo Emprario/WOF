@@ -11,7 +11,7 @@ class FeurEngine:
     def __init__(self):
         pygame.init()
         # Display
-        self.size = (900, 900)
+        self.size: tuple[int,int] = (900, 900)
         self.display = pygame.display.set_mode(self.size)
         # Titre
         pygame.display.set_caption("World Of Feur")
@@ -91,7 +91,7 @@ class MaitreDuJeu:
         self.MO = MapObject()
         self.fengine = FeurEngine()
         self.registery = []
-        self.hack = []
+        self.hack = [] # for debug purpose only
         self.highlighted_cases = []
 
         # Load config
