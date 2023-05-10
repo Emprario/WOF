@@ -1,6 +1,6 @@
 from entities import Piece
 
-Color = "w" | "b"
+Color = set["w","b"]
 
 class Player:
     gold: int

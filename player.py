@@ -2,7 +2,7 @@ from RESSOURCE import DEFAULT_ACTION_COUNT
 from entities import Piece
 
 
-Color = "w" | "b"
+Color = set["w","b"]
 
 
 class Player:
