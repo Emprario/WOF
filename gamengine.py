@@ -110,8 +110,8 @@ class MaitreDuJeu:
 
     def update_registery(self, player:Player) -> None:
         alter = self.get_other_player(player)
-        self.registery: list[Entity] =  player.pieces + \
-            alter.visible_pieces + self.MO.get_bat() + self.highlighted_cases
+        self.registery: list[Entity] =  self.highlighted_cases + player.pieces + \
+            alter.visible_pieces + self.MO.get_bat()
         self.fengine.active_pieces = self.registery + self.hack
 
     def update_visible_pieces(self) -> None:
@@ -217,7 +217,7 @@ class MaitreDuJeu:
             player.possibilite_mvto = []
             player.possibilite_attack = []
             obj = [p for pl in self.players for p in pl.pieces if p.get_pos() == mouse and pl is player.sel_piece.oppocamp] + \
-                  [bat for bat in self.MO.bat if bat.appartenance]
+                  [bat for bat in self.MO.bat if bat.appartenance if bat.get_pos() == mouse]
             self.attack(player.sel_piece, obj[0])
             self.disable_highlight_all()
             player.pieces_acted.append(player.sel_piece)

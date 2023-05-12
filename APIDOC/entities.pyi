@@ -1,5 +1,4 @@
 import pygame
-from _typeshed import Incomplete
 from player import Color, Player
 
 class HPBar(pygame.sprite.Sprite):
