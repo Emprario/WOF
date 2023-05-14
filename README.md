@@ -9,7 +9,26 @@ Le jeu en question est au tour par tour, le but est de détruire le coffre adver
 
 ### Exigence fonctionnelles
 
+* Pouvoir déplacer une de ses pieces
+* Attaquer/Tuer les pieces adverses
+* Attaquer/Tuer les coffres adverses
+* Visualiser les possibilités d'attaques et de déplacements distinctements
+* Pouvoir la piece que l'on veut jouer
+* Pouvoir jouer $n \in \mathbb{N} ^*$ mouvements **ou** attaques
+* Ne pas pouvoir franchir des cases solides
+* Pouvoir se cacher dans des buissons
+* Pouvoir attaquer à la fois à distance et au cac
+* Avoir des bonus en fonction de la case où l'on est
+
 ### Exigence non fonctionnelles
+
+* Fiabilité et facile à modifier
+* KISS (Keep It Simple Stupid)
+* DRY (Don't Repeat Yourself)
+* Ouvert à la modification dans un but de faciliter la personalisation du jeu par le joueur
+  * Des fichiers de configurations
+  * Des modules pythons
+* Performances suffisantes pour tourner sur un ordinateur (unix/windows) moderne.
 
 ## Analyse et conception
 
